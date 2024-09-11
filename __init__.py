@@ -37,21 +37,25 @@ def histogramme():
 
 @app.route('/commits/')
 def get_commits():
-    # Connexion à la base de données SQLite
-    conn = sqlite3.connect('path_to_your_database.db')
-    cursor = conn.cursor()
-
-    # Exécution de la requête pour récupérer les commits
-    cursor.execute("SELECT date FROM commits")
-    commits = cursor.fetchall()
-
-    # Fermeture de la connexion
-    conn.close()
-
-    # Extraction des minutes
-    commits_minutes = [datetime.strptime(commit[0], '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d %H:%M') for commit in commits]
-
-    # Rendre le template avec les données des minutes
+    # URL de l'API GitHub pour récupérer les commits
+    url = 'https://api.github.com/repos/OpenRSI/5MCSI_Metriques/commits'
+    
+    # Appel à l'API GitHub
+    response = requests.get(url)
+    
+    # Vérifiez que la requête a réussi
+    if response.status_code != 200:
+        return "Erreur lors de la récupération des données", 500
+    
+    # Récupération des données JSON
+    commits = response.json()
+    
+    # Extraction des dates des commits
+    commits_minutes = [
+        datetime.strptime(commit['commit']['committer']['date'], '%Y-%m-%dT%H:%M:%SZ').strftime('%Y-%m-%d %H:%M')
+        for commit in commits
+    ]
+    
     return render_template('commits.html', commits_minutes=commits_minutes)
 
 
