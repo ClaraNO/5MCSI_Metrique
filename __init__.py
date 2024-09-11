@@ -35,38 +35,31 @@ def mongraphique():
 def histogramme():
     return render_template("histogramme.html")
 
-@app.route('/commits/')
-def commits_graph():
-    url = "https://api.github.com/repos/OpenRSI/5MCSI_Metriques/commits"
-    
-    try:
-        # Effectuer une requête GET à l'API GitHub
-        response = requests.get(url)
-        response.raise_for_status()  # Assurez-vous que la requête a réussi
-        
-        commits_data = response.json()
-        
-        # Extraire les minutes des commits en utilisant la route /extract-minutes/
-        commits_minutes = []
-        for commit in commits_data:
-            commit_date = commit['commit']['author']['date']
-            # Utiliser la route extract-minutes pour obtenir les minutes
-            minute_response = requests.get(f'http://localhost:5000/extract-minutes/{commit_date}')
-            if minute_response.status_code == 200:
-                minute_data = minute_response.json()
-                commits_minutes.append(minute_data['minutes'])
-            else:
-                return jsonify({'error': 'Erreur lors de l\'extraction des minutes', 'details': minute_response.json()}), 500
-        
-        # Vérification : Si pas de données
-        if not commits_minutes:
-            return jsonify({'error': 'Aucun commit trouvé'}), 404
-        
-        # Passer les données des minutes au template
-        return render_template('commits.html', commits_minutes=commits_minutes)
-    
-    except requests.exceptions.RequestException as e:
-        return jsonify({'error': 'Erreur lors de la récupération des données de l\'API GitHub', 'details': str(e)}), 500
+@app.route('/commits')
+def get_commits():
+    # Connexion à la base de données SQLite
+    conn = sqlite3.connect('path_to_your_database.db')  # Remplacez par le chemin de votre base de données
+    cursor = conn.cursor()
+
+    # Exécution de la requête pour récupérer les commits
+    cursor.execute("SELECT id, message, author, date FROM commits")  # Adaptez la requête selon votre schéma de base de données
+    commits = cursor.fetchall()
+
+    # Fermeture de la connexion
+    conn.close()
+
+    # Transformation des données en JSON
+    commits_list = [
+        {
+            'id': commit[0],
+            'message': commit[1],
+            'author': commit[2],
+            'date': datetime.strptime(commit[3], '%Y-%m-%d %H:%M:%S').isoformat()  # Assurez-vous que le format correspond à celui de votre base de données
+        }
+        for commit in commits
+    ]
+
+    return jsonify(commits_list)
 
 
 if __name__ == "__main__":
