@@ -35,14 +35,6 @@ def mongraphique():
 def histogramme():
     return render_template("histogramme.html")
 
-# Route pour extraire les minutes à partir d'une date
-@app.route('/extract-minutes/<date_string>')
-def extract_minutes(date_string):
-    date_object = datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%SZ')
-    minutes = date_object.minute
-    return jsonify({'minutes': minutes})
-
-
 # Route pour afficher les minutes des commits
 @app.route('/commits/')
 def commits():
