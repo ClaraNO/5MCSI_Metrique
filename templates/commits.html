@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activité des Commits</title>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        #chart_div {
+            width: 100%;
+            height: 500px;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+    <h2>Activité des Commits (Minute par Minute)</h2>
+    <div id="chart_div"></div>
+
+    <script>
+        // Charger Google Charts
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(drawChart);
+
+        // Fonction pour dessiner le graphique
+        function drawChart() {
+            var data = new google.visualization.DataTable();
+            data.addColumn('number', 'Minute');
+            data.addColumn('number', 'Nombre de commits');
+
+            // Les données des minutes (reçues depuis Flask)
+            var commits_minutes = {{ commits_minutes|tojson }};
+            
+            // Compter le nombre de commits par minute
+            var commits_count = {};
+            commits_minutes.forEach(function(minute) {
+                if (!commits_count[minute]) {
+                    commits_count[minute] = 0;
+                }
+                commits_count[minute]++;
+            });
+
+            // Insérer les données dans Google Charts
+            var rows = [];
+            for (var minute in commits_count) {
+                rows.push([parseInt(minute), commits_count[minute]]);
+            }
+            data.addRows(rows);
+
+            var options = {
+                title: 'Nombre de commits par minute',
+                hAxis: { title: 'Minute' },
+                vAxis: { title: 'Nombre de commits' },
+                legend: { position: 'none' },
+                bar: { groupWidth: '75%' },
+                colors: ['#f06']
+            };
+
+            // Créer et dessiner le graphique dans la div "chart_div"
+            var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+            chart.draw(data, options);
+        }
+    </script>
+</body>
+</html>
