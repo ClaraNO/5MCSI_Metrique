@@ -1,53 +1,53 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>Histogramme des températures</title>
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-  </head>
-  <body>
-    <h2>Histogramme des températures de la ville de Tawarano</h2>
-    <div id="histogram_div"></div>
-    <script>
-      // Charger les packages nécessaires pour les graphiques en colonnes
-      google.charts.load('current', { packages: ['corechart'] });
-      google.charts.setOnLoadCallback(drawHistogram);
+  <head>
+    <meta charset="UTF-8" />
+    <title>Histogramme des températures</title>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  </head>
+  <body>
+    <h2>Histogramme des températures de la ville de Tawarano</h2>
+    <div id="histogram_div"></div>
+    <script>
+      // Charger les packages nécessaires pour les graphiques en colonnes
+      google.charts.load('current', { packages: ['corechart'] });
+      google.charts.setOnLoadCallback(drawHistogram);
 
-      // Fonction pour dessiner l'histogramme
-      function drawHistogram() {
-        function drawChart(data) {
-          // Convertir les données récupérées en un tableau utilisable par Google Charts
-          var dataTable = new google.visualization.DataTable();
-          dataTable.addColumn('string', 'Date');
-          dataTable.addColumn('number', 'Température (°C)');
+      // Fonction pour dessiner l'histogramme
+      function drawHistogram() {
+        function drawChart(data) {
+          // Convertir les données récupérées en un tableau utilisable par Google Charts
+          var dataTable = new google.visualization.DataTable();
+          dataTable.addColumn('string', 'Date');
+          dataTable.addColumn('number', 'Température (°C)');
 
-          // Parcourir les résultats de l'API et ajouter les lignes de données au tableau
-          data.results.forEach(entry => {
-            var date = new Date(entry.Jour * 1000);  // Conversion du timestamp en date
-            dataTable.addRow([date.toLocaleDateString(), entry.temp]);  // Ajouter la date et la température
-          });
+          // Parcourir les résultats de l'API et ajouter les lignes de données au tableau
+          data.results.forEach(entry => {
+            var date = new Date(entry.Jour * 1000);  // Conversion du timestamp en date
+            dataTable.addRow([date.toLocaleDateString(), entry.temp]);  // Ajouter la date et la température
+          });
 
-          // Options de configuration de l'histogramme
-          var options = {
-            title: 'Histogramme des températures de la ville de Tawarano',
-            hAxis: { title: 'Date' },
-            vAxis: { title: 'Température (°C)' },
-            legend: { position: 'none' },
-            bar: { groupWidth: '75%' },  // Largeur des barres
-          };
+          // Options de configuration de l'histogramme
+          var options = {
+            title: 'Histogramme des températures de la ville de Tawarano',
+            hAxis: { title: 'Date' },
+            vAxis: { title: 'Température (°C)' },
+            legend: { position: 'none' },
+            bar: { groupWidth: '75%' },  // Largeur des barres
+          };
 
-          // Création et affichage de l'histogramme
-          var chart = new google.visualization.ColumnChart(document.getElementById('histogram_div'));
-          chart.draw(dataTable, options);
-        }
+          // Création et affichage de l'histogramme
+          var chart = new google.visualization.ColumnChart(document.getElementById('histogram_div'));
+          chart.draw(dataTable, options);
+        }
 
-        // Récupération des données depuis notre API /tawarano/
-        fetch('/tawarano/')
-          .then(response => response.json())
-          .then(data => {
-            drawChart(data);  // Dessiner l'histogramme avec les données reçues
-          });
-      }
-    </script>
-  </body>
+        // Récupération des données depuis notre API /tawarano/
+        fetch('/tawarano/')
+          .then(response => response.json())
+          .then(data => {
+            drawChart(data);  // Dessiner l'histogramme avec les données reçues
+          });
+      }
+    </script>
+  </body>
 </html>
