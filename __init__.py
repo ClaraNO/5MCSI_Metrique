@@ -37,14 +37,13 @@ def histogramme():
 
 @app.route('/extract-minutes/<date_string>')
 def extract_minutes(date_string):
-        date_object = datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%SZ')
-        minutes = date_object.minute
-        return jsonify({'minutes': minutes})
+    date_object = datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%SZ')
+    minutes = date_object.minute
+    return jsonify({'minutes': minutes})
 
 # Route pour afficher le graphique des commits
 @app.route('/commits/')
 def commits_graph():
-    # API GitHub pour récupérer les commits du repository
     url = "https://api.github.com/repos/OpenRSI/5MCSI_Metriques/commits"
     
     try:
@@ -52,15 +51,17 @@ def commits_graph():
         response = requests.get(url)
         response.raise_for_status()  # Assurez-vous que la requête a réussi
         
-        # Extraire les données des commits si la requête est réussie
         commits_data = response.json()
         
-        # Extraire les minutes des commits
+        # Extraire les minutes des commits en utilisant la route /extract-minutes/
         commits_minutes = []
         for commit in commits_data:
             commit_date = commit['commit']['author']['date']
-            minutes = datetime.strptime(commit_date, '%Y-%m-%dT%H:%M:%SZ').minute
-            commits_minutes.append(minutes)
+            # Utiliser la route extract-minutes pour obtenir les minutes
+            minute_response = requests.get(f'http://localhost:5000/extract-minutes/{commit_date}')
+            if minute_response.status_code == 200:
+                minute_data = minute_response.json()
+                commits_minutes.append(minute_data['minutes'])
         
         # Vérification : Si pas de données
         if not commits_minutes:
@@ -70,7 +71,6 @@ def commits_graph():
         return render_template('commits.html', commits_minutes=commits_minutes)
     
     except requests.exceptions.RequestException as e:
-        # Gérer les erreurs de requête
         return jsonify({'error': 'Erreur lors de la récupération des données de l\'API GitHub', 'details': str(e)}), 500
 
 
