@@ -35,14 +35,14 @@ def mongraphique():
 def histogramme():
     return render_template("histogramme.html")
 
-@app.route('/commits')
+@app.route('/commits/')
 def get_commits():
     # Connexion à la base de données SQLite
-    conn = sqlite3.connect('path_to_your_database.db')  # Remplacez par le chemin de votre base de données
+    conn = sqlite3.connect('path_to_your_database.db')
     cursor = conn.cursor()
 
     # Exécution de la requête pour récupérer les commits
-    cursor.execute("SELECT date FROM commits")  # Adaptez la requête selon votre schéma de base de données
+    cursor.execute("SELECT date FROM commits")
     commits = cursor.fetchall()
 
     # Fermeture de la connexion
