@@ -39,7 +39,7 @@ def histogramme():
 def commits():
     try:
         # Remplacez l'URL par celle de votre propre repo si nécessaire
-        url = 'https://api.github.com/repos/clarano/5MCSI_Metrique/commits'
+        url = 'https://api.github.com/repos/ClaraNO/5MCSI_Metrique/commits'
         response = urlopen(url)
         commits_data = json.load(response)
         
