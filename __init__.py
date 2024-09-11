@@ -42,24 +42,17 @@ def get_commits():
     cursor = conn.cursor()
 
     # Exécution de la requête pour récupérer les commits
-    cursor.execute("SELECT id, message, author, date FROM commits")  # Adaptez la requête selon votre schéma de base de données
+    cursor.execute("SELECT date FROM commits")  # Adaptez la requête selon votre schéma de base de données
     commits = cursor.fetchall()
 
     # Fermeture de la connexion
     conn.close()
 
-    # Transformation des données en JSON
-    commits_list = [
-        {
-            'id': commit[0],
-            'message': commit[1],
-            'author': commit[2],
-            'date': datetime.strptime(commit[3], '%Y-%m-%d %H:%M:%S').isoformat()  # Assurez-vous que le format correspond à celui de votre base de données
-        }
-        for commit in commits
-    ]
+    # Extraction des minutes
+    commits_minutes = [datetime.strptime(commit[0], '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d %H:%M') for commit in commits]
 
-    return jsonify(commits_list)
+    # Rendre le template avec les données des minutes
+    return render_template('commits.html', commits_minutes=commits_minutes)
 
 
 if __name__ == "__main__":
