@@ -36,7 +36,7 @@ def histogramme():
     return render_template("histogramme.html")
 
 @app.route('/commits/')
-def get_commits():
+def show_commits():
     # URL de l'API GitHub pour récupérer les commits
     url = 'https://api.github.com/repos/OpenRSI/5MCSI_Metriques/commits'
     
@@ -50,13 +50,8 @@ def get_commits():
     # Récupération des données JSON
     commits = response.json()
     
-    # Extraction des dates des commits
-    commits_minutes = [
-        datetime.strptime(commit['commit']['committer']['date'], '%Y-%m-%dT%H:%M:%SZ').strftime('%Y-%m-%d %H:%M')
-        for commit in commits
-    ]
-    
-    return render_template('commits.html', commits_minutes=commits_minutes)
+    return render_template('commits.html', commits=commits)
+
 
 
 if __name__ == "__main__":
