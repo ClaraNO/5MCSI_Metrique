@@ -31,11 +31,6 @@ def meteo():
 def mongraphique():
     return render_template("graphique.html")
 
-# Route pour afficher l'histogramme
-@app.route("/histogramme/")
-def histogramme():
-    return render_template("histogramme.html")
 
-  
 if __name__ == "__main__":
   app.run(debug=True)
