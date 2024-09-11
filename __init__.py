@@ -35,29 +35,9 @@ def mongraphique():
 def histogramme():
     return render_template("histogramme.html")
 
-@app.route('/commits/')
+@app.route("/commits/")
 def commits():
-    try:
-        # Remplacez l'URL par celle de votre propre repo si nécessaire
-        url = 'https://api.github.com/repos/ClaraNO/5MCSI_Metrique/commits'
-        response = urlopen(url)
-        commits_data = json.load(response)
-        
-        # Extraire les minutes des commits
-        commit_minutes = {}
-        for commit in commits_data:
-            commit_time = commit['commit']['author']['date']
-            date_object = datetime.strptime(commit_time, '%Y-%m-%dT%H:%M:%SZ')
-            minute = date_object.minute
-            commit_minutes[minute] = commit_minutes.get(minute, 0) + 1
-        
-        # Préparer les données pour le tableau
-        results = [{'minute': minute, 'count': count} for minute, count in sorted(commit_minutes.items())]
-        return jsonify(results=results)
-    
-    except Exception as e:
-        # Gérer les erreurs, par exemple, en retournant un message d'erreur
-        return str(e)
+    return render_template("commits.html")
 
 
 if __name__ == "__main__":
